@@ -125,109 +125,13 @@ class MultiAgentSearchAgent(Agent):
 # Problem 1b: implementing minimax
 
 class MinimaxAgent(MultiAgentSearchAgent):
-  """
+    """
     Your minimax agent (problem 1)
-  """
-  def __init__(self, evalFn = 'scoreEvaluationFunction', depth = '2'):
-      super().__init__(evalFn, depth)
-      self.initial_evaluation_printed = False
-
-  def getAction(self, gameState: GameState) -> str:
     """
-      Returns the minimax action from the current gameState using self.depth
-      and self.evaluationFunction. Terminal states can be found by one of the following:
-      pacman won, pacman lost or there are no legal moves.
-    """
-    # Початковий виклик для Пак-Мена (агент 0)
-    # Ми хочемо знайти дію для Пак-Мена, яка максимізує мінімаксне значення
-    # після його ходу та подальших ходів привидів.
-
-    legal_pacman_actions = gameState.getLegalActions(0)
-    if not legal_pacman_actions:
-        return Directions.STOP # Якщо немає дозволених ходів, зупиняємося
-    # print(f"  [DEBUG] Поточний стан. Легальні дії: {legal_pacman_actions}")
-    best_score = -float('inf') # Ініціалізуємо найкращий рахунок як негативну нескінченність
-    best_action = Directions.STOP # Ініціалізуємо найкращу дію
-
-    # Для кожного можливого ходу Пак-Мена
-    for action in legal_pacman_actions:
-        # Генеруємо стан після ходу Пак-Мена
-        successor_state = gameState.generateSuccessor(0, action)
-        # Обчислюємо мінімаксне значення цього стану, починаючи з ходу першого привида (агент 1)
-        # Глибина гри починається з 0 повних раундів, але ми вже зробили 1 хід (Пак-Мена),
-        # тому наступний агент - привид 1, і ми ще не завершили повний раунд.
-        # Ми будемо відстежувати кількість *індивідуальних* ходів, зроблених у дереві пошуку.
-        # Після ходу Пак-Мена зроблено 1 індивідуальний хід.
-        score = self.minimax_value(successor_state, 1, 1)
-        # print(f"    [DEBUG] Хід: {action}, Отриманий score: {score}")
-
-        # Якщо цей рахунок кращий за поточний найкращий
-        if score > best_score:
-            best_score = score
-            best_action = action
-            # print(f"      [DEBUG] Новий best_score: {best_score}, best_action: {best_action}") # Дуже важливо!
-    if not self.initial_evaluation_printed:
-        print(f"Мінімаксна оцінка для ПОЧАТКОВОГО СТАНУ ГРИ (глибина {self.depth}): {best_score}")
-        # Позначаємо, що ми вже надрукували оцінку для початкового стану
-        self.initial_evaluation_printed = True
-    if best_action == Directions.STOP and Directions.STOP not in legal_pacman_actions and legal_pacman_actions:
-        # print(f"ПОПЕРЕДЖЕННЯ: Агент хотів обрати STOP, але це нелегально. Поточні легальні дії: {legal_pacman_actions}. Фінальний best_score: {best_score}")
-        best_action = random.choice(legal_pacman_actions)
-    return best_action # Повертаємо найкращу дію для Пак-Мена
-
-  def minimax_value(self, gameState: GameState, agentIndex: int, total_turns_made: int) -> float:
-    """
-      Рекурсивна допоміжна функція для обчислення мінімаксного значення стану.
-      gameState: поточний стан гри
-      agentIndex: індекс агента, чия черга ходити
-      total_turns_made: загальна кількість індивідуальних ходів, зроблених від початку пошуку
-    """
-    num_agents = gameState.getNumAgents()
-    # Визначаємо поточну глибину гри (кількість повних раундів)
-    # Повний раунд завершується після ходу останнього привида
-    current_game_depth = total_turns_made // num_agents
-
-    # Базові випадки рекурсії:
-    # 1. Кінцевий стан гри (перемога або програш)
-    # 2. Досягнуто максимальної глибини пошуку
-    # 3. У поточного агента немає дозволених ходів
-    if gameState.isWin() or gameState.isLose() or \
-       current_game_depth == self.depth or \
-       not gameState.getLegalActions(agentIndex):
-        # Оцінюємо кінцевий стан за допомогою self.evaluationFunction
-        return self.evaluationFunction(gameState)
-
-    # Отримуємо дозволені ходи для поточного агента
-    legal_actions = gameState.getLegalActions(agentIndex)
-
-    # Якщо хід Пак-Мена (Макс-гравець)
-    if agentIndex == 0:
-        max_value = -float('inf')
-        for action in legal_actions:
-            # Генеруємо стан-наступник
-            successor_state = gameState.generateSuccessor(agentIndex, action)
-            # Рекурсивно викликаємо для наступного агента (першого привида)
-            # Збільшуємо лічильник зроблених ходів
-            value = self.minimax_value(successor_state, 1, total_turns_made + 1)
-            max_value = max(max_value, value)
-        return max_value
-
-    # Якщо хід привида (Мін-гравець)
-    else:
-        min_value = float('inf')
-        for action in legal_actions:
-            # Генеруємо стан-наступник
-            successor_state = gameState.generateSuccessor(agentIndex, action)
-            # Визначаємо індекс наступного агента
-            next_agent_index = (agentIndex + 1) % num_agents
-            # Рекурсивно викликаємо для наступного агента
-            # Збільшуємо лічильник зроблених ходів
-            value = self.minimax_value(successor_state, next_agent_index, total_turns_made + 1)
-            min_value = min(min_value, value)
-        return min_value
-
-
-    # END_YOUR_CODE
+    def getAction(self, gameState: GameState) -> str:
+      # BEGIN_YOUR_CODE (our solution is 20 lines of code, but don't worry if you deviate from this)
+      raise Exception("Not implemented yet")
+  # END_YOUR_CODE
 
 ######################################################################################
 # Problem 2a: implementing alpha-beta
