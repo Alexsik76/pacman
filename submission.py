@@ -238,112 +238,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     You may reference the pseudocode for Alpha-Beta pruning here:
     en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning#Pseudocode
   """
-  def __init__(self, evalFn = 'scoreEvaluationFunction', depth = '2'):
-      super().__init__(evalFn, depth)
-      self.initial_evaluation_printed = False
-  
   def getAction(self, gameState: GameState) -> str:
-    """
-      Returns the minimax action using self.depth and self.evaluationFunction
-    """
-
-    # BEGIN_YOUR_CODE (our solution is 36 lines of code, but don't worry if you deviate from this)
-
-    # Пак-Мен - це агент 0 (MAX-гравець)
-    # Ініціалізуємо alpha (найкращий варіант для MAX на шляху до кореня)
-    # та beta (найкращий варіант для MIN на шляху до кореня)
-    alpha = -float('inf')
-    beta = float('inf')
-
-    best_score = -float('inf')
-    best_action = Directions.STOP # Дія за замовчуванням, якщо немає можливих ходів
-
-    legal_pacman_actions = gameState.getLegalActions(0)
-    if not legal_pacman_actions:
-        return Directions.STOP
-
-    # Перебираємо можливі ходи Пак-Мена на кореневому рівні
-    for action in legal_pacman_actions:
-        successor_state = gameState.generateSuccessor(0, action)
-        # Після ходу Пак-Мена (агент 0), настає черга першого привида (агент 1).
-        # Поточна глибина ходів (ply depth) стає 1 (зроблено один хід).
-        # Значення цього ходу визначається тим, що зробить MIN-гравець (привид).
-        score = self._get_value(successor_state, 1, 1, alpha, beta) # agentIndex=1 (перший привид), ply_depth=1
-
-        if score > best_score:
-            best_score = score
-            best_action = action
-
-        # Оновлюємо alpha для кореневого MAX-вузла.
-        # Це значення alpha потім використовується наступними викликами _get_value
-        # для інших кореневих ходів, дозволяючи відсічення.
-        alpha = max(alpha, best_score)
-    if not self.initial_evaluation_printed:
-        print(f"Мінімаксна оцінка для ПОЧАТКОВОГО СТАНУ ГРИ (глибина {self.depth}): {best_score}")
-        # Позначаємо, що ми вже надрукували оцінку для початкового стану
-        self.initial_evaluation_printed = True
-    # Інколи на поточному ході агент не може обрати найкращий варіант, і вирішує зупинитись, у той час як це заборонено.
-    # У таких випадках обирається випадковий напрямок.
-    if best_action == Directions.STOP and Directions.STOP not in legal_pacman_actions and legal_pacman_actions:
-       # print(f"ПОПЕРЕДЖЕННЯ: Агент хотів обрати STOP, але це нелегально. Поточні легальні дії: {legal_pacman_actions}. Фінальний best_score: {best_score}")
-        best_action = random.choice(legal_pacman_actions)
-    return best_action
-
-  def _get_value(self,
-                 gameState: GameState,
-                 agentIndex: int,
-                 current_ply_depth: int,
-                 alpha: float,
-                 beta: float) -> float:
-    """
-    Рекурсивна допоміжна функція для обчислення значення стану з використанням альфа-бета відсічення.
-    - gameState: поточний стан гри.
-    - agentIndex: індекс агента, чия черга ходити.
-    - current_ply_depth: загальна кількість індивідуальних ходів, зроблених до цього моменту на поточному шляху пошуку.
-    - alpha: найкраще значення, знайдене досі для MAX-гравця на шляху до цього стану.
-    - beta: найкраще значення, знайдене досі для MIN-гравця на шляху до цього стану.
-    """
-    num_agents = gameState.getNumAgents()
-    # current_game_depth - це кількість повних раундів (Пак-Мен + всі привиди), що завершилися.
-    # self.depth - це максимальна кількість повних раундів для пошуку.
-    current_game_depth = current_ply_depth // num_agents
-
-    # Базові випадки для рекурсії:
-    # 1. Кінцевий стан (перемога/програш)
-    # 2. Досягнуто максимальної глибини пошуку для повних раундів
-    # 3. Немає дозволених ходів для поточного агента
-    if gameState.isWin() or gameState.isLose() or \
-       current_game_depth == self.depth or \
-       not gameState.getLegalActions(agentIndex):
-        return self.evaluationFunction(gameState)
-
-    legal_actions = gameState.getLegalActions(agentIndex)
-
-    # Визначаємо, чий хід: Пак-Мена (MAX) чи привида (MIN)
-    is_pacman_turn = (agentIndex == 0)
-
-    if is_pacman_turn: # MAX-гравець (Пак-Мен)
-        value = -float('inf')
-        for action in legal_actions:
-            successor_state = gameState.generateSuccessor(agentIndex, action)
-            # Наступним агентом буде перший привид
-            next_agent = (agentIndex + 1) % num_agents
-            value = max(value, self._get_value(successor_state, next_agent, current_ply_depth + 1, alpha, beta))
-            if value > beta: # Умова відсічення для MAX-гравця (β-відсічення)
-                return value
-            alpha = max(alpha, value) # Оновлюємо alpha
-        return value
-    else: # MIN-гравець (Привид)
-        value = float('inf')
-        for action in legal_actions:
-            successor_state = gameState.generateSuccessor(agentIndex, action)
-            # Наступним агентом може бути інший привид або Пак-Мен
-            next_agent = (agentIndex + 1) % num_agents
-            value = min(value, self._get_value(successor_state, next_agent, current_ply_depth + 1, alpha, beta))
-            if value < alpha: # Умова відсічення для MIN-гравця (α-відсічення)
-                return value
-            beta = min(beta, value) # Оновлюємо beta
-        return value
+    raise Exception("Not implemented yet")
     # END_YOUR_CODE
 
 ######################################################################################
@@ -410,10 +306,9 @@ def betterEvaluationFunction(currentGameState: GameState) -> float:
   else: # Якщо їжі немає, але гра не виграна (наприклад, ще є привиди для з'їдання на спец. карті)
       pass # Вже оброблено isWin()
 
-    # --- Фактори пов'язані з привидами ---
+  # --- Фактори пов'язані з привидами ---
   ghostStates = currentGameState.getGhostStates()
-    
-    # 3. Вплив активних привидів
+  # 3. Вплив активних привидів
   sumDistToActiveGhosts = 0
   numActiveGhosts = 0
   closestActiveGhostDist = float('inf')
@@ -433,7 +328,6 @@ def betterEvaluationFunction(currentGameState: GameState) -> float:
               evaluationScore -= (1.0 / distToGhost) * 150 # Вага для близьких
           elif distToGhost <= 7: # Привиди на середній відстані
               evaluationScore -= (1.0 / distToGhost) * 70  # Менша вага
-      
       else: # Наляканий привид
           # 4. Бонус за близькість до наляканих привидів (і можливість їх з'їсти)
           # Якщо встигаємо добігти, поки він наляканий
@@ -455,20 +349,17 @@ def betterEvaluationFunction(currentGameState: GameState) -> float:
                   # Визначаємо поріг відстані, на якій цей фактор стає важливим
                   # Наприклад, якщо привид в межах 5-7 клітинок і рухається на нас
                   threatDistanceForDirectionPenalty = 6
-                  
                   if currentDistToPacman <= threatDistanceForDirectionPenalty:
                       # Величина штрафу може залежати від того, наскільки близько привид,
                       # або бути фіксованою.
                       # Цю вагу (W_HEADING_TOWARDS) потрібно буде підібрати.
-                      penaltyWeight_HeadingTowards = 10 # Наприклад
-                      
+                      penaltyWeight_HeadingTowards = 30 # Наприклад
                       # Можна зробити штраф сильнішим, якщо привид дуже близько І рухається до нас
                       # (додатково до основного штрафу за близькість)
                       if currentDistToPacman <= 2: # Дуже близько і прямує до нас
                           evaluationScore -= penaltyWeight_HeadingTowards * 1.5 # Збільшений штраф
                       else:
                           evaluationScore -= penaltyWeight_HeadingTowards
-                      
                       # Альтернативно, штраф може залежати від відстані:
                       # evaluationScore -= (1.0 / (currentDistToPacman + 0.1)) * penaltyWeight_HeadingTowards
                       # (додаємо 0.1, щоб уникнути ділення на нуль, якщо currentDistToPacman може бути 0,
