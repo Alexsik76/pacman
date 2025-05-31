@@ -359,20 +359,17 @@ def betterEvaluationFunction(currentGameState: GameState) -> float:
                   # Визначаємо поріг відстані, на якій цей фактор стає важливим
                   # Наприклад, якщо привид в межах 5-7 клітинок і рухається на нас
                   threatDistanceForDirectionPenalty = 6
-                  
                   if currentDistToPacman <= threatDistanceForDirectionPenalty:
                       # Величина штрафу може залежати від того, наскільки близько привид,
                       # або бути фіксованою.
                       # Цю вагу (W_HEADING_TOWARDS) потрібно буде підібрати.
                       penaltyWeight_HeadingTowards = 10 # Наприклад
-                      
                       # Можна зробити штраф сильнішим, якщо привид дуже близько І рухається до нас
                       # (додатково до основного штрафу за близькість)
                       if currentDistToPacman <= 2: # Дуже близько і прямує до нас
                           evaluationScore -= penaltyWeight_HeadingTowards * 1.5 # Збільшений штраф
                       else:
                           evaluationScore -= penaltyWeight_HeadingTowards
-                      
                       # Альтернативно, штраф може залежати від відстані:
                       # evaluationScore -= (1.0 / (currentDistToPacman + 0.1)) * penaltyWeight_HeadingTowards
                       # (додаємо 0.1, щоб уникнути ділення на нуль, якщо currentDistToPacman може бути 0,
@@ -393,10 +390,8 @@ def betterEvaluationFunction(currentGameState: GameState) -> float:
       for capsulePos in capsules:
           dist = manhattanDistance(pacmanPos, capsulePos)
           minCapsuleDist = min(minCapsuleDist, dist)
-        
       if minCapsuleDist > 0: # Уникаємо ділення на нуль
           evaluationScore += (1.0 / minCapsuleDist) * 10 # Вага: 10
-
   return evaluationScore
 
 better = betterEvaluationFunction
