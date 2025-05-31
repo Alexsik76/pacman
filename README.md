@@ -1,9 +1,6 @@
 To play, type:   python pacman.py
 For help, type:  python pacman.py -h
 See http://inst.eecs.berkeley.edu/~cs188 for more information.
-To play, type:   python pacman.py
-For help, type:  python pacman.py -h
-See http://inst.eecs.berkeley.edu/~cs188 for more information.
 
 # Вміст репозиторію
 
